@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スタディコレクション</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- SortableJS -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 h-screen overflow-hidden flex flex-row">
+
+  <!-- LEFT SIDEBAR -->
+  <aside id="sidebar" class="sidebar-collapsed bg-white border-r-4 border-slate-300 flex-shrink-0 flex flex-col justify-between p-3 h-screen z-40 shadow-xl transition-all duration-300 overflow-hidden">
+    <div class="space-y-6">
+      <!-- Header & Toggle Menu Button -->
+      <div class="flex items-center justify-between px-1 py-1">
+        <div class="flex items-center space-x-3 cursor-pointer overflow-hidden" onclick="switchTab('home')">
+          <i data-lucide="book-open-check" class="w-8 h-8 text-blue-600 flex-shrink-0"></i>
+          <h1 class="text-xl font-black tracking-wider text-blue-600 whitespace-nowrap sidebar-text">スタディコレクション</h1>
+        </div>
+        <button onclick="toggleSidebar()" class="duo-btn duo-btn-gray p-2 rounded-xl text-slate-600 flex-shrink-0">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="space-y-2">
+        <button onclick="switchTab('home')" id="nav-home" class="nav-btn w-full duo-btn duo-btn-gray py-3 px-3 rounded-2xl flex items-center justify-start gap-3 text-base">
+          <i data-lucide="home" class="w-6 h-6 flex-shrink-0"></i>
+          <span class="sidebar-text font-bold whitespace-nowrap">ホーム</span>
+        </button>
+        <button onclick="switchTab('mybook')" id="nav-mybook" class="nav-btn w-full duo-btn duo-btn-gray py-3 px-3 rounded-2xl flex items-center justify-start gap-3 text-base">
+          <i data-lucide="folder" class="w-6 h-6 flex-shrink-0"></i>
+          <span class="sidebar-text font-bold whitespace-nowrap">My問題集</span>
+        </button>
+        <button onclick="switchTab('training')" id="nav-training" class="nav-btn w-full duo-btn duo-btn-gray py-3 px-3 rounded-2xl flex items-center justify-start gap-3 text-base">
+          <i data-lucide="dumbbell" class="w-6 h-6 flex-shrink-0"></i>
+          <span class="sidebar-text font-bold whitespace-nowrap">トレーニング</span>
+        </button>
+        <button onclick="switchTab('aicoach')" id="nav-aicoach" class="nav-btn w-full duo-btn duo-btn-gray py-3 px-3 rounded-2xl flex items-center justify-start gap-3 text-base">
+          <i data-lucide="sparkles" class="w-6 h-6 flex-shrink-0"></i>
+          <span class="sidebar-text font-bold whitespace-nowrap">AI集中講座</span>
+        </button>
+        <button onclick="switchTab('test')" id="nav-test" class="nav-btn w-full duo-btn duo-btn-gray py-3 px-3 rounded-2xl flex items-center justify-start gap-3 text-base">
+          <i data-lucide="file-text" class="w-6 h-6 flex-shrink-0"></i>
+          <span class="sidebar-text font-bold whitespace-nowrap">テスト</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Gemini External Link Box -->
+    <div class="pt-4 border-t border-slate-200">
+      <a href="https://gemini.google.com" target="_blank" class="flex items-center justify-center gap-2 p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-2xl border-2 border-purple-200 transition text-sm">
+        <i data-lucide="external-link" class="w-5 h-5 flex-shrink-0"></i>
+        <span class="sidebar-text whitespace-nowrap">Geminiを開く</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 h-screen overflow-y-auto p-4 md:p-8 max-w-5xl mx-auto w-full">
+
+    <!-- HOME TAB -->
+    <section id="tab-home" class="tab-content space-y-6">
+      <div class="flex items-center justify-between bg-amber-50 border-2 border-amber-300 p-4 rounded-3xl shadow-sm">
+        <div class="flex items-center space-x-3">
+          <div class="bg-amber-400 text-white p-3 rounded-2xl shadow">
+            <i data-lucide="flame" class="w-8 h-8 animate-bounce"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-slate-800 text-lg">連続学習記録</h4>
+            <p class="text-xs text-amber-700 font-bold"><span id="homeStreakDays">1</span> 日連続で勉強中！この調子で頑張ろう！</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center py-8 bg-white rounded-3xl shadow-sm border-b-4 border-slate-200 p-6">
+        <h2 class="text-3xl font-extrabold text-blue-600 mb-2">学習をはじめよう！</h2>
+        <p class="text-slate-500 font-bold">問題集の作成、トレーニング、AI講座、テスト出力がこれ1つで！</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div onclick="switchTab('mybook')" class="duo-card bg-blue-500 border-blue-700 text-white p-6 rounded-3xl flex items-center space-x-4 cursor-pointer">
+          <div class="bg-white/20 p-4 rounded-2xl">
+            <i data-lucide="folder-open" class="w-10 h-10"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-black">My問題集</h3>
+            <p class="text-blue-100 font-bold text-sm">問題の作成・編集・ファイル管理</p>
+          </div>
+        </div>
+
+        <div onclick="switchTab('training')" class="duo-card bg-emerald-500 border-emerald-700 text-white p-6 rounded-3xl flex items-center space-x-4 cursor-pointer">
+          <div class="bg-white/20 p-4 rounded-2xl">
+            <i data-lucide="dumbbell" class="w-10 h-10"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-black">トレーニング</h3>
+            <p class="text-emerald-100 font-bold text-sm">ランダム出題でサクッと復習</p>
+          </div>
+        </div>
+
+        <div onclick="switchTab('aicoach')" class="duo-card bg-purple-500 border-purple-700 text-white p-6 rounded-3xl flex items-center space-x-4 cursor-pointer">
+          <div class="bg-white/20 p-4 rounded-2xl">
+            <i data-lucide="sparkles" class="w-10 h-10"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-black">AI集中講座</h3>
+            <p class="text-purple-100 font-bold text-sm">プロンプトを自動生成してGeminiへ</p>
+          </div>
+        </div>
+
+        <div onclick="switchTab('test')" class="duo-card bg-amber-500 border-amber-700 text-white p-6 rounded-3xl flex items-center space-x-4 cursor-pointer">
+          <div class="bg-white/20 p-4 rounded-2xl">
+            <i data-lucide="file-text" class="w-10 h-10"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-black">テスト</h3>
+            <p class="text-amber-100 font-bold text-sm">テスト印刷＆過去問アーカイブ</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MY BOOK TAB -->
+    <section id="tab-mybook" class="tab-content hidden space-y-6">
+      <div class="bg-white p-4 rounded-3xl border-b-4 border-slate-200 space-y-3">
+        <!-- Search Bar -->
+        <div class="relative">
+          <div class="flex items-center bg-slate-100 border-2 border-slate-300 rounded-2xl px-3 py-2 focus-within:border-blue-500 transition">
+            <i data-lucide="search" class="w-5 h-5 text-slate-400 mr-2"></i>
+            <input type="text" id="searchInput" oninput="handleSearchInput()" onfocus="showSearchHistory()" placeholder="キーワードで問題を検索..." class="w-full bg-transparent font-bold text-slate-700 focus:outline-none text-sm">
+            <button onclick="clearSearchInput()" id="clearSearchBtn" class="hidden text-slate-400 hover:text-slate-600">
+              <i data-lucide="x-circle" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Search History Dropdown -->
+          <div id="searchHistoryMenu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border-2 border-slate-200 rounded-2xl shadow-xl z-30 p-3 space-y-2">
+            <div class="flex justify-between items-center text-xs font-bold text-slate-400 pb-1 border-b">
+              <span>検索履歴</span>
+              <button onclick="clearAllSearchHistory()" class="text-red-500 hover:underline">すべて消去</button>
+            </div>
+            <div id="searchHistoryList" class="space-y-1 max-h-40 overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-between items-center gap-4 pt-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <i data-lucide="folder" class="text-blue-500"></i>
+            <select id="folderSelect" onchange="onFolderChange()" class="font-bold bg-slate-100 border-2 border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 text-slate-700">
+            </select>
+            <button onclick="promptNewFolder()" class="duo-btn duo-btn-blue text-xs px-3 py-2 rounded-xl flex items-center gap-1">
+              <i data-lucide="folder-plus" class="w-4 h-4"></i> 新規
+            </button>
+            <button onclick="promptEditFolder()" title="名前を変更" class="duo-btn duo-btn-gray text-xs px-2 py-2 rounded-xl">
+              <i data-lucide="edit-2" class="w-4 h-4"></i>
+            </button>
+            <button onclick="deleteCurrentFolder()" title="フォルダを削除" class="duo-btn duo-btn-red text-xs px-2 py-2 rounded-xl">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <button id="bookmarkFilterBtn" onclick="toggleBookmarkFilter()" class="duo-btn duo-btn-amber text-xs md:text-sm px-3 py-2 rounded-xl flex items-center gap-2">
+              <i data-lucide="bookmark" class="w-4 h-4"></i> ブックマークのみ: OFF
+            </button>
+            <button onclick="openQuestionModal()" class="duo-btn duo-btn-green text-xs md:text-sm px-4 py-2 rounded-xl flex items-center gap-2">
+              <i data-lucide="plus-circle" class="w-5 h-5"></i> 問題を追加
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question List (Sortable & Full text) -->
+      <div id="questionList" class="space-y-4 pb-12"></div>
+    </section>
+
+    <!-- QUESTION DETAIL VIEW -->
+    <section id="view-detail" class="tab-content hidden space-y-6 pb-12">
+      <button onclick="switchTab('mybook')" class="duo-btn duo-btn-gray px-4 py-2 rounded-xl flex items-center gap-2 mb-4">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i> 問題一覧に戻る
+      </button>
+
+      <div class="bg-white rounded-3xl p-6 shadow-sm border-b-4 border-slate-200 space-y-6">
+        <div class="flex justify-between items-start">
+          <span id="detailFolderBadge" class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-sm">フォルダ名</span>
+          <button id="detailBookmarkBtn" onclick="toggleDetailBookmark()" class="text-slate-300 hover:text-amber-400 transition">
+            <i data-lucide="bookmark" class="w-8 h-8 fill-current"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-slate-800 whitespace-pre-wrap" id="detailQuestionText"></h3>
+          <div id="detailImageContainer" class="hidden">
+            <img id="detailImage" src="" alt="問題画像" class="max-h-64 rounded-2xl border-2 border-slate-200 object-contain">
+          </div>
+        </div>
+
+        <!-- Sticky Note (Fusen) -->
+        <div id="stickyNote" onclick="revealAnswer()" class="cursor-pointer bg-amber-100 border-l-8 border-amber-400 p-6 rounded-r-3xl shadow-sm transform hover:-translate-y-1 transition duration-200">
+          <div id="stickyCover" class="text-center text-amber-800 font-bold flex flex-col items-center justify-center py-4">
+            <i data-lucide="pointer" class="w-8 h-8 mb-2 animate-bounce"></i>
+            付箋をタップして解答と補足を表示
+          </div>
+          <div id="stickyContent" class="hidden space-y-4">
+            <div>
+              <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">解答</span>
+              <p id="detailAnswerText" class="text-lg font-bold text-slate-900 whitespace-pre-wrap"></p>
+            </div>
+            <div id="detailNoteBox">
+              <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">補足説明</span>
+              <p id="detailNoteText" class="text-sm font-semibold text-slate-700 whitespace-pre-wrap"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex justify-end">
+          <button onclick="askAIForDetail()" class="duo-btn duo-btn-purple px-6 py-3 rounded-2xl flex items-center gap-2 text-lg font-bold">
+            <i data-lucide="sparkles" class="w-6 h-6"></i> Ask AI (コピーしてGeminiを開く)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRAINING TAB -->
+    <section id="tab-training" class="tab-content hidden space-y-6 pb-12">
+      <div id="training-setup" class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200 space-y-6 max-w-xl mx-auto">
+        <h2 class="text-2xl font-black text-emerald-600 flex items-center gap-2">
+          <i data-lucide="dumbbell"></i> トレーニング設定
+        </h2>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block font-bold text-slate-700 mb-2">出題対象フォルダ</label>
+            <select id="trainingFolderSelect" class="w-full font-bold bg-slate-100 border-2 border-slate-300 rounded-xl p-3 text-slate-700">
+              <option value="ALL">すべての問題</option>
+            </select>
+          </div>
+
+          <div class="flex items-center justify-between p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl">
+            <span class="font-bold text-slate-700 flex items-center gap-2">
+              <i data-lucide="bookmark" class="w-5 h-5 text-amber-500"></i> ブックマークした問題のみ
+            </span>
+            <button id="trainBookmarkOnlyBtn" type="button" onclick="toggleTrainBookmarkOnly()" class="duo-btn duo-btn-gray text-xs px-4 py-2 rounded-xl">
+              OFF
+            </button>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-2">出題数 (1〜5問)</label>
+            <div class="flex gap-2">
+              <button type="button" onclick="setTrainCount(1)" class="train-count-btn duo-btn duo-btn-gray flex-1 py-3 rounded-xl font-black text-lg">1</button>
+              <button type="button" onclick="setTrainCount(2)" class="train-count-btn duo-btn duo-btn-gray flex-1 py-3 rounded-xl font-black text-lg">2</button>
+              <button type="button" onclick="setTrainCount(3)" class="train-count-btn duo-btn duo-btn-green flex-1 py-3 rounded-xl font-black text-lg">3</button>
+              <button type="button" onclick="setTrainCount(4)" class="train-count-btn duo-btn duo-btn-gray flex-1 py-3 rounded-xl font-black text-lg">4</button>
+              <button type="button" onclick="setTrainCount(5)" class="train-count-btn duo-btn duo-btn-gray flex-1 py-3 rounded-xl font-black text-lg">5</button>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="startTraining()" class="w-full duo-btn duo-btn-green py-4 rounded-2xl font-black text-xl flex items-center justify-center gap-2">
+          <i data-lucide="play" class="fill-current"></i> トレーニングスタート
+        </button>
+      </div>
+
+      <!-- Training Playground -->
+      <div id="training-play" class="hidden space-y-6 max-w-2xl mx-auto">
+        <div class="flex justify-between items-center bg-white px-6 py-3 rounded-2xl border-b-4 border-slate-200">
+          <span id="trainProgress" class="font-black text-emerald-600 text-lg">第 1 / 3 問</span>
+          <button id="trainBookmarkBtn" onclick="toggleTrainBookmark()" class="text-slate-300 hover:text-amber-400">
+            <i data-lucide="bookmark" class="w-7 h-7 fill-current"></i>
+          </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200 space-y-6">
+          <div class="space-y-4">
+            <h3 id="trainQuestionText" class="text-xl font-bold text-slate-800 whitespace-pre-wrap"></h3>
+            <div id="trainImageContainer" class="hidden">
+              <img id="trainImage" src="" alt="問題画像" class="max-h-60 rounded-xl border-2 border-slate-200">
+            </div>
+          </div>
+
+          <div id="trainAnswerArea" class="hidden bg-emerald-50 border-2 border-emerald-300 p-4 rounded-2xl space-y-3">
+            <div>
+              <span class="text-xs font-bold text-emerald-700">【正解】</span>
+              <p id="trainAnswerText" class="text-lg font-bold text-slate-800 whitespace-pre-wrap"></p>
+            </div>
+            <div id="trainNoteBox">
+              <span class="text-xs font-bold text-emerald-700">【補足】</span>
+              <p id="trainNoteText" class="text-sm text-slate-600 whitespace-pre-wrap"></p>
+            </div>
+          </div>
+
+          <div class="pt-4 flex gap-4">
+            <button id="trainCheckBtn" onclick="checkTrainAnswer()" class="w-full duo-btn duo-btn-blue py-4 rounded-2xl font-black text-lg">
+              Check （解答と補足を表示）
+            </button>
+            <button id="trainNextBtn" onclick="nextTrainQuestion()" class="hidden w-full duo-btn duo-btn-green py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-2">
+              次へ進む <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Result -->
+      <div id="training-result" class="hidden space-y-6 max-w-2xl mx-auto">
+        <div class="bg-white p-6 rounded-3xl text-center border-b-4 border-slate-200 space-y-3">
+          <i data-lucide="trophy" class="w-16 h-16 text-amber-400 mx-auto animate-bounce"></i>
+          <h2 class="text-3xl font-black text-slate-800">トレーニング完了！</h2>
+          <p class="text-slate-500 font-bold">お疲れ様でした！復習して知識を定着させましょう。</p>
+        </div>
+
+        <div id="trainResultList" class="space-y-4"></div>
+
+        <button onclick="resetTrainingTop()" class="w-full duo-btn duo-btn-emerald py-4 rounded-2xl font-black text-xl">
+          トレーニングTOPに戻る
+        </button>
+      </div>
+    </section>
+
+    <!-- AI COACH TAB -->
+    <section id="tab-aicoach" class="tab-content hidden space-y-6 max-w-2xl mx-auto pb-12">
+      <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200 space-y-4">
+        <h2 class="text-2xl font-black text-purple-600 flex items-center gap-2">
+          <i data-lucide="sparkles"></i> AI集中講座
+        </h2>
+        <p class="text-slate-500 font-bold text-sm">フォルダやキーワードで問題を絞り込み、講座用プロンプトをGeminiへ送りましょう。</p>
+        
+        <!-- Folder Filter for AI Coach -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-2">フォルダで絞り込み</label>
+          <select id="coachFolderSelect" onchange="onCoachFilterChange()" class="w-full font-bold bg-slate-100 border-2 border-slate-300 rounded-xl p-3 text-slate-700">
+            <option value="ALL">すべてのフォルダ</option>
+          </select>
+        </div>
+
+        <!-- Keyword Search for AI Coach -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-2">キーワードで検索</label>
+          <div class="flex items-center bg-slate-100 border-2 border-slate-300 rounded-xl px-3 py-2 focus-within:border-purple-500 transition">
+            <i data-lucide="search" class="w-5 h-5 text-slate-400 mr-2"></i>
+            <input type="text" id="coachSearchInput" oninput="onCoachFilterChange()" placeholder="問題や解答をキーワード検索..." class="w-full bg-transparent font-bold text-slate-700 focus:outline-none text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-2">学習する問題を選択</label>
+          <select id="coachQuestionSelect" class="w-full font-bold bg-slate-100 border-2 border-slate-300 rounded-xl p-3 text-slate-700">
+          </select>
+        </div>
+
+        <button onclick="startAICoach()" class="w-full duo-btn duo-btn-purple py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-2">
+          <i data-lucide="copy"></i> プロンプトをコピーしてGeminiへ飛ぶ
+        </button>
+      </div>
+    </section>
+
+    <!-- TEST TAB -->
+    <section id="tab-test" class="tab-content hidden space-y-6 pb-12">
+      <div class="bg-white p-6 rounded-3xl border-b-4 border-slate-200 space-y-4 max-w-2xl mx-auto text-center">
+        <i data-lucide="file-check-2" class="w-12 h-12 text-amber-500 mx-auto"></i>
+        <h2 class="text-2xl font-black text-slate-800">5問テスト作成 & PDF出力</h2>
+        <p class="text-slate-500 font-bold text-sm">登録されているすべての問題からランダムで5問抽出してテスト形式で出力します。</p>
+        <button onclick="generateNewTest()" class="duo-btn duo-btn-amber px-8 py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-2 mx-auto">
+          <i data-lucide="printer"></i> 新しいテストを作成（5問）
+        </button>
+      </div>
+
+      <!-- PDF Preview & Action -->
+      <div id="testArea" class="hidden space-y-4 max-w-4xl mx-auto">
+        <div class="flex justify-between items-center">
+          <h3 class="font-black text-xl text-slate-700">テストプレビュー</h3>
+          <button onclick="downloadTestPDF()" class="duo-btn duo-btn-green px-6 py-3 rounded-xl font-bold flex items-center gap-2">
+            <i data-lucide="download"></i> PDFで保存
+          </button>
+        </div>
+
+        <!-- Printable Target Layout -->
+        <div id="pdfPrintTarget" class="bg-white p-8 rounded-lg shadow border border-slate-300 text-slate-900 mx-auto box-border" style="width: 780px; min-height: 1020px; max-width: 100%;">
+          
+          <div class="text-center pb-2 mb-2">
+            <h1 class="text-xl font-black tracking-wide" id="testPrintTitle">第1回 テスト</h1>
+            <p class="text-xs text-slate-500" id="testPrintDate"></p>
+          </div>
+
+          <div class="grid grid-cols-12 gap-3 border-b-2 border-slate-800 pb-2 mb-4 font-bold text-sm text-center">
+            <div class="col-span-8 text-left pl-2">問題</div>
+            <div class="col-span-4 text-center">解答欄</div>
+          </div>
+
+          <div class="space-y-6" id="testPrintRowsContainer"></div>
+
+          <div class="mt-12 pt-4 border-t-2 border-slate-800 flex justify-end items-center text-sm font-bold pr-4">
+            <span class="mr-4">合計点数：</span>
+            <div class="w-24 border-b-2 border-slate-800 text-center pb-1">/ 5</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past Tests Archive -->
+      <div class="bg-white p-6 rounded-3xl border-b-4 border-slate-200 space-y-4 max-w-4xl mx-auto">
+        <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+          <i data-lucide="history"></i> 過去問アーカイブ
+        </h3>
+        <div id="pastTestList" class="space-y-3"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- AI PROMPT MODAL (Fallback & Confirmation) -->
+  <div id="aiPromptModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto border-b-8 border-slate-300">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+          <i data-lucide="sparkles" class="text-purple-600"></i> AI集中講座 (プロンプト連携)
+        </h3>
+        <button onclick="closeAIPromptModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-500 font-bold">ブラウザの制限やポップアップブロックにより自動処理できなかった場合でも、以下のボックスからコピーしてGeminiをご利用いただけます。</p>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">生成されたプロンプト</label>
+        <textarea id="aiPromptModalText" rows="6" readonly class="w-full p-3 bg-slate-50 border-2 border-slate-300 rounded-xl text-xs font-mono text-slate-700 focus:outline-none"></textarea>
+      </div>
+
+      <div class="flex flex-col gap-3 pt-2">
+        <button type="button" onclick="copyPromptFromModal()" class="duo-btn duo-btn-purple py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+          <i data-lucide="copy" class="w-5 h-5"></i> プロンプトをコピーする
+        </button>
+        <button type="button" onclick="openGeminiDirect()" class="duo-btn duo-btn-blue py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+          <i data-lucide="external-link" class="w-5 h-5"></i> Geminiを開く (別タブ)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAST TEST DETAIL MODAL -->
+  <div id="pastTestModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto border-b-8 border-slate-300">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-xl font-black text-slate-800">過去問詳細</h3>
+        <button onclick="closePastTestModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+
+      <div id="pastTestModalContent" class="space-y-4"></div>
+
+      <div class="flex gap-3 pt-4 border-t">
+        <button onclick="closePastTestModal()" class="duo-btn duo-btn-gray flex-1 py-3 rounded-xl font-bold">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION CREATE/EDIT MODAL -->
+  <div id="questionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto border-b-8 border-slate-300">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="modalTitle" class="text-xl font-black text-slate-800">問題を新規追加</h3>
+        <button onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+
+      <form id="questionForm" onsubmit="saveQuestion(event)" class="space-y-4">
+        <input type="hidden" id="editQuestionId">
+        
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">フォルダ選択</label>
+          <select id="modalFolderSelect" class="w-full font-bold bg-slate-100 border-2 border-slate-300 rounded-xl p-3 text-slate-700"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">問題文 (改行可)</label>
+          <textarea id="modalQText" required rows="3" class="w-full p-3 border-2 border-slate-300 rounded-xl focus:border-blue-500 focus:outline-none font-medium"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">解答 (改行可)</label>
+          <textarea id="modalAText" required rows="2" class="w-full p-3 border-2 border-slate-300 rounded-xl focus:border-blue-500 focus:outline-none font-medium"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">補足説明 (任意)</label>
+          <textarea id="modalNoteText" rows="2" class="w-full p-3 border-2 border-slate-300 rounded-xl focus:border-blue-500 focus:outline-none font-medium"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">画像追加</label>
+          <input type="file" id="modalImageInput" accept="image/*" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+          <img id="modalImagePreview" src="" class="hidden mt-2 max-h-32 rounded-lg border border-slate-200">
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeQuestionModal()" class="duo-btn duo-btn-gray flex-1 py-3 rounded-xl font-bold">キャンセル</button>
+          <button type="submit" class="duo-btn duo-btn-green flex-1 py-3 rounded-xl font-bold">保存する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

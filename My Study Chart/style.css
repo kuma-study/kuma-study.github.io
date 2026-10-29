@@ -1,0 +1,136 @@
+/* Sidebar Collapse System */
+.sidebar-collapsed {
+  width: 4.5rem;
+}
+
+.sidebar-expanded {
+  width: 16rem;
+}
+
+.sidebar-collapsed .sidebar-text {
+  display: none !important;
+}
+
+.sidebar-expanded .sidebar-text {
+  display: inline-block !important;
+}
+
+/* Duolingo Style 3D Buttons & Cards System */
+.duo-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: all 0.1s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.duo-btn:active {
+  transform: translateY(4px) !important;
+  box-shadow: none !important;
+}
+
+/* Color Variants */
+.duo-btn-blue {
+  background-color: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 4px 0 #1d4ed8;
+}
+.duo-btn-blue:hover { background-color: #60a5fa; }
+
+.duo-btn-green {
+  background-color: #22c55e;
+  color: #ffffff;
+  box-shadow: 0 4px 0 #15803d;
+}
+.duo-btn-green:hover { background-color: #4ade80; }
+
+.duo-btn-purple {
+  background-color: #a855f7;
+  color: #ffffff;
+  box-shadow: 0 4px 0 #7e22ce;
+}
+.duo-btn-purple:hover { background-color: #c084fc; }
+
+.duo-btn-amber {
+  background-color: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 4px 0 #b45309;
+}
+.duo-btn-amber:hover { background-color: #fbbf24; }
+
+.duo-btn-emerald {
+  background-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 4px 0 #047857;
+}
+
+.duo-btn-red {
+  background-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 0 #b91c1c;
+}
+.duo-btn-red:hover { background-color: #f87171; }
+
+.duo-btn-gray {
+  background-color: #f1f5f9;
+  color: #475569;
+  box-shadow: 0 4px 0 #cbd5e1;
+}
+.duo-btn-gray:hover { background-color: #e2e8f0; }
+
+/* Active Nav Button */
+.nav-btn.active {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 0 #1d4ed8 !important;
+}
+
+/* Interactive Cards */
+.duo-card {
+  transition: all 0.15s ease;
+  border-bottom-width: 6px;
+}
+
+.duo-card:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.03);
+}
+
+.duo-card:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceShort {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.tab-content {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.animate-bounce-short {
+  animation: bounceShort 0.6s ease-in-out;
+}
+
+/* SortableJS Grab styling */
+.sortable-ghost {
+  opacity: 0.4;
+  background-color: #e0f2fe !important;
+}
+
+/* Printable PDF Container Styling */
+#pdfPrintTarget {
+  box-sizing: border-box !important;
+}
